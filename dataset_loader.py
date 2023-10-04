@@ -13,7 +13,7 @@ def fetch_and_prepare_dataset(project_folder):
                 jsonl_folders.add(root)
 
     if jsonl_folders:
-        logger.warning(
+        logger.info(
             f"The folder(s) {', '.join(jsonl_folders)} already exists and contains .jsonl files. Skipping extraction.")
 
         jsonl_folders_list = list(jsonl_folders)
