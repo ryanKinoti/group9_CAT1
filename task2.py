@@ -1,54 +1,109 @@
 import os
+import os.path
+import json
+from typing import List
 from logs_settings import *
 
 
-def process_language_files(input_dir, output_dir):
-    try:
-        summary_file_path = os.path.join(output_dir, '2.1')
+def fetch_and_prepare_dataset(project_folder: str) -> str:
+    data_folder = os.path.join(project_folder, '1.1')
 
-        with open(summary_file_path, 'w', encoding='utf-8') as summary_file:
-            languages = ['en-US', 'sw-KE', 'de-DE']
+    languages_to_fetch = ['en-US', 'sw-KE', 'de-DE']
 
-            for lang in languages:
-                input_file_path = os.path.join(input_dir, '1.1', f'{lang}.jsonl')
-                output_language_dir = os.path.join(output_dir, lang)
+    selected_files = []
 
-                if not os.path.exists(output_language_dir):
-                    os.makedirs(output_language_dir)
+    for lang in languages_to_fetch:
+        file_path = os.path.join(data_folder, f'{lang}.jsonl')
+        if os.path.isfile(file_path):
+            selected_files.append(file_path)
+        else:
+            logging.warning(f"{lang}.jsonl file not found in the specified path: {file_path}")
 
-                process_language_file(input_file_path, output_language_dir, lang)
+    if not selected_files:
+        raise ValueError("No files found for the specified languages.")
 
-                summary_file.write(f'{lang} files processed: {os.path.basename(output_language_dir)}\n')
-
-        logger.info(f'Successfully processed all languages. Summary written to {summary_file_path}')
-
-    except Exception as e:
-        logger.error(f'Error processing language files: {e}')
+    return selected_files
 
 
-def process_language_file(input_file, output_dir, language):
+def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], destination_folder: str, timestamp=None) -> None:
+    """
+    Generates separate JSONL files for specified languages
+    :param path_to_data: path to where the jsonl files have been downloaded
+    :param languages: list of languages for which to generate JSONL files
+    :param destination_folder: folder where the resulting jsonl files will be stored
+    :return:
+    """
+
+    for lang in languages:
+        lang_file_path = os.path.join(path_to_data, f"{lang}.jsonl")
+        if os.path.isfile(lang_file_path):
+            with open(lang_file_path, "r", encoding='utf-8') as lang_file:
+                lang_data = [json.loads(line) for line in lang_file]
+
+            for split in ['train', 'test', 'dev']:
+                split_data = [instruction for instruction in lang_data if instruction.get("partition") == split]
+
+                if split_data:
+                    output_file_path = os.path.join(destination_folder, f"{lang}_{split}.jsonl")
+
+                    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
+                    if os.path.isfile(output_file_path):
+                        logging.warning(
+                            f"{lang}_{split}.jsonl file already exists in the specified output folder: {output_file_path}. Skipping.")
+                    else:
+                        with open(output_file_path, "w", encoding='utf-8') as output_file:
+                            for instruction in split_data:
+                                output_file.write(json.dumps(instruction) + '\n')
+                else:
+                    logging.warning(f"No data found for {lang}_{split}. Skipping.")
+        else:
+            logging.warning(f"{lang}.jsonl file not found in the specified path: {path_to_data}")
+
+
+def file_exists(file_path):
+    """
+    Check if a file exists.
+    :param file_path: Path to the file.
+    :return: True if the file exists, False otherwise.
+    """
+    return os.path.isfile(file_path)
+
+
+def generate_file(data, output_file_path, overwrite=False):
+    """
+    Generate a file with the given data.
+    :param data: List of data to write to the file.
+    :param output_file_path: Path to the output file.
+    :param overwrite: If True, overwrite the existing file. If False and the file exists, skip generation.
+    :return: True if the file is generated, False if the file already exists and overwrite is False.
+    """
+    if not overwrite and file_exists(output_file_path):
+        print(f"File already exists: {output_file_path}. Skipping.")
+        return False
+
+    with open(output_file_path, "w", encoding="utf-8") as output_file:
+        for item in data:
+            output_file.write(json.dumps(item) + '\n')
+
+    print(f"File generated: {output_file_path}")
+    return True
+
+
+def process_jsonl_file(input_file, output_dir, language):
     try:
         with open(input_file, 'r', encoding='utf-8') as input_file:
             lines = input_file.readlines()
 
-            train_data = [line for line in lines if "train" in line]
-            dev_data = [line for line in lines if "dev" in line]
-            test_data = [line for line in lines if "test" in line]
+            for partition in ['train', 'dev', 'test']:
+                data = [line for line in lines if partition in line]
 
-            train_file_name = f'{language}.train_jsonl'
-            dev_file_name = f'{language}.dev_jsonl'
-            test_file_name = f'{language}.test_jsonl'
+                output_file_name = f'{language}.{partition}_jsonl'
+                with open(os.path.join(output_dir, output_file_name), 'w', encoding='utf-8') as output_file:
+                    output_file.writelines(data)
 
-            with open(os.path.join(output_dir, train_file_name), 'w', encoding='utf-8') as train_output:
-                train_output.writelines(train_data)
-
-            with open(os.path.join(output_dir, dev_file_name), 'w', encoding='utf-8') as dev_output:
-                dev_output.writelines(dev_data)
-
-            with open(os.path.join(output_dir, test_file_name), 'w', encoding='utf-8') as test_output:
-                test_output.writelines(test_data)
-
-        logger.info(f'Successfully processed {input_file} and generated jsonl files in {output_dir}')
+        logger.info(f'Successfully processed {input_file} and generated JSONL files in {output_dir}')
 
     except Exception as e:
         logger.error(f'Error processing {input_file}: {e}')
+

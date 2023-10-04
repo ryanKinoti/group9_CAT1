@@ -33,6 +33,9 @@ def main():
     parser.add_argument('-df', '--drive_folder', help='Specify the new drive folder you wish to store your upload in',
                         dest='drive_folder')
 
+    parser.add_argument('-output', '--output_jsonl', help='Specify the output folder for generated JSONL files',
+                        dest='output_jsonl')
+
     args = parser.parse_args()
 
     if args.log:
@@ -121,18 +124,9 @@ def main():
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
 
-    parser = argparse.ArgumentParser(
-        prog='Massive Dataset Manipulator',
-        description='Tool for manipulating massive datasets.'
-    )
-
-    parser.add_argument('--input_dir', help='Path to the input directory containing language-specific files',
-                        required=True)
-    parser.add_argument('--output_dir', help='Path to the output directory for storing jsonl files', required=True)
-
-    args = parser.parse_args()
-
-    process_language_files(args.input_dir, args.output_dir)
+    if args.task == "2" and args.output_jsonl:
+        logging.info(f'Generating separate JSONL files for English, Swahili, and German in the folder: {args.output_jsonl}')
+        generate_jsonl_files_for_languages(path_to_data, ['en-US', 'sw-KE', 'de-DE'], args.output_jsonl)
 
 
 if __name__ == "__main__":
