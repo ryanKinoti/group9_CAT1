@@ -39,83 +39,38 @@ def main():
         numeric_level = getattr(logging, args.log.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % args.log)
-        logging.basicConfig(level=numeric_level)
+        # create_log_settings(numeric_level)
 
-    if ((args.task == "1a" and args.output_file)
-            or (args.task == "1a" and args.output_folder_c)
-            or (args.task == "1a" and args.language)
-            or (args.task == "1a" and args.desired_upload)
-            or (args.task == "1a" and args.drive_folder)):
-        logging.error('This option is not available for task 1a. To proceed with task 1a, kindly specify only your '
-                      'desired output folder: -ofo')
-
-    if (args.task == '1a' and args.output_folder) and not (args.output_file or args.language or args.output_folder_c
-                                                           or args.desired_upload or args.drive_folder):
+    if args.task == "1a":
+        if not args.output_folder:
+            logging.error('For task 1, you need to specify your output folder -ofo')
+            return
         logging.info('Generating the en-xx.xlsx files and storing them in your desired '
                      'output folder: %s ....' % args.output_folder)
         generate_xlsx_files(path_to_data, args.output_folder)
 
-    if args.task == "1a" and not (args.output_folder or args.output_file or args.language or args.output_folder_c
-                                  or args.desired_upload or args.drive_folder):
-        logging.error('To complete task 1a kindly specify your desired output folder -ofo')
-
-    if ((args.task == "1b" and args.output_folder)
-            or (args.task == "1b" and args.output_folder_c)
-            or (args.task == "1b" and args.language)
-            or (args.task == "1b" and args.desired_upload)
-            or (args.task == "1b" and args.drive_folder)):
-        logging.error('This option is not available for task 1b. To proceed with task 1b, kindly specify only your '
-                      'desired output file: -ofi')
-
-    if args.task == "1b" and not (args.output_folder or args.output_file or args.language or args.output_folder_c or
-                                  args.desired_upload or args.drive_folder):
-        logging.error('To complete task 1b kindly specify your desired output file -ofi')
-
-    if (args.task == '1b' and args.output_file) and not (
-            args.output_folder or args.language or args.output_folder_c or
-            args.desired_upload or args.drive_folder):
-        logging.info('Generating the en-xx sheets and storing them in your desired '
-                     'output file: %s ....' % args.output_file)
+    if args.task == "1b":
+        if not args.output_file:
+            logging.error('For task 1b, you need to specify your output file -ofi')
+            return
+        logging.info("Generating xls sheet and storing it to  %s" % args.output_file)
         generate_xlsx_sheets(path_to_data, args.output_file)
+    if args.task == "1c":
+        if not args.language and not args.output_folder:
+            logging.error(
+                'To complete task 1c kindly specify your desired language: -lan and your output folder: -ofo')
+            return
 
-    if ((args.task == "1c" and args.output_folder) or (args.task == "1c" and args.output_file) or
-            (args.task == "1c" and args.desired_upload) or (args.task == "1c" and args.drive_folder)):
-        logging.error('This option is not available for task 1c. To proceed with task 1c, kindly specify only your '
-                      'desired language: -lan and your desired output_folder: -ofoc')
-
-    if args.task == "1c" and not (args.output_folder or args.output_file or args.language or args.output_folder_c or
-                                  args.desired_upload or args.drive_folder):
-        logging.error('To complete task 1c kindly specify your desired language: -lan and your output folder: -ofoc')
-
-    if args.task == "1c" and (args.language and not args.output_folder_c):
-        logging.error('To complete task 1c please also specify your desired output folder ie task=1c, -lan, -ofoc')
-
-    if args.task == "1c" and (args.output_folder_c and not args.language):
-        logging.error('To complete task 1c please also specify your desired language ie task=1c, -lan, -ofoc')
-
-    if ((args.task == '1c' and args.language and args.output_folder_c)
-            and not (args.output_file or args.output_folder or args.desired_upload or args.drive_folder)):
         logging.info(f'Generating the en-xx.xlsx file for the language: {args.language}'
-                     f' and storing it in your desired output folder: {args.output_folder_c}')
-        specific_lang_xlsx_file(path_to_data, args.language, args.output_folder_c)
+                     f' and storing it in your desired output folder: {args.output_folder}')
+        specific_lang_xlsx_file(path_to_data, args.language, args.output_folder)
 
-    if args.task == 'upload' and (args.output_folder or args.output_file or args.language or args.output_folder_c):
-        logging.error('This option is not available for the upload function. To proceed with your upload'
-                      'kindly specify only you desired upload: -du and your new drive folder: -df')
-
-    if args.task == 'upload' and not (args.output_folder or args.output_file or args.language or args.output_folder_c or
-                                      args.desired_upload or args.drive_folder):
-        logging.error('To complete your upload kindly specify your desired upload: -du and your new drive folder: -df')
-
-    if args.task == 'upload' and (args.desired_upload and not args.drive_folder):
-        logging.error('To complete your upload kindly also specify your drive folder: -df ie task=upload, -du, -df')
-
-    if args.task == 'upload' and (args.drive_folder and not args.desired_upload):
-        logging.error('To complete your upload kindly also specify the path to '
-                      'your desired upload: du ie task=upload, -du, -df')
-
-    if ((args.task == 'upload' and args.desired_upload and args.drive_folder)
-            and not (args.output_file or args.output_folder or args.language or args.output_folder_c)):
+    if args.task == "upload":
+        if not args.desired_upload and not args.drive_folder:
+            logging.error(
+                "To complete upload, you need to specify -du/--desired_upload for the folder to upload and "
+                "--df/--drive_folder for the folder name")
+            return
         logging.info(f'Uploading the files or folders in path: {args.desired_upload}'
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
