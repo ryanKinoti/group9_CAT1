@@ -1,6 +1,7 @@
 import argparse
 
 from task1 import *
+from task2 import *
 from google_drive_upload import *
 from dataset_loader import *
 
@@ -31,6 +32,9 @@ def main():
                                                         'google drive', dest='desired_upload')
     parser.add_argument('-df', '--drive_folder', help='Specify the new drive folder you wish to store your upload in',
                         dest='drive_folder')
+
+    parser.add_argument('-output', '--output_jsonl', help='Specify the output folder for generated JSONL files',
+                        dest='output_jsonl')
 
     args = parser.parse_args()
 
@@ -119,6 +123,10 @@ def main():
         logging.info(f'Uploading the files or folders in path: {args.desired_upload}'
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
+
+    if args.task == "2" and args.output_jsonl:
+        logging.info(f'Generating separate JSONL files for English, Swahili, and German in the folder: {args.output_jsonl}')
+        generate_jsonl_files_for_languages(path_to_data, ['en-US', 'sw-KE', 'de-DE'], args.output_jsonl)
 
 
 if __name__ == "__main__":
