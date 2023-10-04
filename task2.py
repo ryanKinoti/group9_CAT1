@@ -25,7 +25,7 @@ def fetch_and_prepare_dataset(project_folder: str) -> str:
     return selected_files
 
 
-def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], destination_folder: str, timestamp=None) -> None:
+def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], destination_folder: str,) -> None:
     """
     Generates separate JSONL files for specified languages
     :param path_to_data: path to where the jsonl files have been downloaded
