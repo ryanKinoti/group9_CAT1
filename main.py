@@ -25,8 +25,6 @@ def main():
                                                       'sheets', dest='output_file')
     parser.add_argument('-lan', '--language', help='Specify the language for which you would like an en-xx.xlsx file',
                         dest='language')
-    parser.add_argument('-ofoc', '--output_folder_c', help='Specify the output folder that will hold the output '
-                                                           'en-xx.xlsx file', dest='output_folder_c')
     parser.add_argument('-du', '--desired_upload', help='Specify the path to the file or folder you wish to upload to '
                                                         'google drive', dest='desired_upload')
     parser.add_argument('-df', '--drive_folder', help='Specify the new drive folder you wish to store your upload in',
