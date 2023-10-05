@@ -1,6 +1,7 @@
 import argparse
 
 from task1 import *
+from task2 import *
 from google_drive_upload import *
 from dataset_loader import *
 
@@ -72,6 +73,19 @@ def main():
         logging.info(f'Uploading the files or folders in path: {args.desired_upload}'
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
+
+    parser = argparse.ArgumentParser(
+        prog='Massive Dataset Manipulator',
+        description='Tool for manipulating massive datasets.'
+    )
+
+    parser.add_argument('--input_dir', help='Path to the input directory containing language-specific files',
+                        required=True)
+    parser.add_argument('--output_dir', help='Path to the output directory for storing jsonl files', required=True)
+
+    args = parser.parse_args()
+
+    process_language_files(args.input_dir, args.output_dir)
 
 
 if __name__ == "__main__":
