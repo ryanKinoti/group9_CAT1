@@ -1,3 +1,7 @@
+import concurrent.futures
+import multiprocessing
+from typing import List
+
 import pandas as pd
 import glob
 import json
@@ -6,6 +10,45 @@ import os
 import logging
 from openpyxl import load_workbook
 from openpyxl.utils.dataframe import dataframe_to_rows
+
+
+def generate_single_xlsx_file(instruction_id: List[str], en_utt: List[str], en_annotation: List[str],
+                              file: str,
+                              destination_folder: str):
+    """
+    Generate a single xlsx sheet from provided arguments
+
+    :param instruction_id:  The instruction id for
+    :param en_utt: English utterance
+    :param en_annotation: English utterance annotayions
+    :param file: Output file name
+    :param destination_folder: Destination folder
+
+    :return:
+    """
+    logging.info(f"Parsing the file {file}")
+    xx_utterance = []
+    xx_annot = []
+    lang = ""
+    xx_file = open(file, "r", encoding='utf-8')
+    for line in xx_file:
+        instruction = json.loads(line)
+        utter = instruction.get("utt")
+        annot = instruction.get("annot_utt")
+        lang = instruction.get("locale")
+        xx_utterance.append(utter)
+        xx_annot.append(annot)
+    xx_file.close()
+
+    # Get the name of the language
+    separator = '-'
+    language = lang.split(separator, 1)[0]
+
+    # Generate dataframe and excel file
+    df = pd.DataFrame({"ID": instruction_id, "English Utterance": en_utt, "English Annotated": en_annotation,
+                       "" + language + " Utterance": xx_utterance, "" + language + " Annotated": xx_annot})
+
+    df.to_excel(f"{destination_folder}/en-" + language + ".xlsx", index=False)
 
 
 def generate_xlsx_files(path_to_data: str, destination_folder: str) -> None:
@@ -31,34 +74,14 @@ def generate_xlsx_files(path_to_data: str, destination_folder: str) -> None:
         en_utterance.append(utter)
         en_annot.append(annot)
 
-    # get data from each xx file
-    for file in massive_dataset_files:
-        xx_utterance = []
-        xx_annot = []
-        lang = ""
-        xx_file = open(file, "r", encoding='utf-8')
-        for line in xx_file:
-            instruction = json.loads(line)
-            utter = instruction.get("utt")
-            annot = instruction.get("annot_utt")
-            lang = instruction.get("locale")
-            xx_utterance.append(utter)
-            xx_annot.append(annot)
-        xx_file.close()
+    os.makedirs(destination_folder, exist_ok=True)
 
-        # Get the name of the language
-        separator = '-'
-        language = lang.split(separator, 1)[0]
-
-        # Generate dataframe and excel file
-        df = pd.DataFrame({"ID": instruction_id, "English Utterance": en_utterance, "English Annotated": en_annot,
-                           "" + language + " Utterance": xx_utterance, "" + language + " Annotated": xx_annot})
-
-        if os.path.isdir(destination_folder):
-            df.to_excel(f"{destination_folder}/en-" + language + ".xlsx", index=False)
-        else:
-            os.mkdir(destination_folder)
-            df.to_excel(f"{destination_folder}/en-" + language + ".xlsx", index=False)
+    with concurrent.futures.ProcessPoolExecutor() as p:
+        for file in massive_dataset_files:
+            p.submit(generate_single_xlsx_file, *(instruction_id, en_utterance,
+                                                  en_annot,
+                                                  file,
+                                                  destination_folder))
 
     logging.info(f"Task successful! Your en-xx.xlsx files have been generated in the folder: {destination_folder}")
 
