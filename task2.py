@@ -10,7 +10,7 @@ def process_language_files(input_dir, output_dir):
             languages = ['en-US', 'sw-KE', 'de-DE']
 
             for lang in languages:
-                input_file_path = os.path.join(input_dir, '1.1', f'{lang}.jsonl')
+                input_file_path = os.path.join(input_dir, f'{lang}.jsonl')
                 output_language_dir = os.path.join(output_dir, lang)
 
                 if not os.path.exists(output_language_dir):
@@ -26,9 +26,9 @@ def process_language_files(input_dir, output_dir):
         logger.error(f'Error processing language files: {e}')
 
 
-def process_language_file(input_file, output_dir, language):
+def process_language_file(input_file_name, output_dir, language):
     try:
-        with open(input_file, 'r', encoding='utf-8') as input_file:
+        with open(input_file_name, 'r', encoding='utf-8') as input_file:
             lines = input_file.readlines()
 
             train_data = [line for line in lines if "train" in line]
@@ -48,7 +48,7 @@ def process_language_file(input_file, output_dir, language):
             with open(os.path.join(output_dir, test_file_name), 'w', encoding='utf-8') as test_output:
                 test_output.writelines(test_data)
 
-        logger.info(f'Successfully processed {input_file} and generated jsonl files in {output_dir}')
+        logger.info(f'Successfully processed {input_file_name} and generated jsonl files in {output_dir}')
 
     except Exception as e:
-        logger.error(f'Error processing {input_file}: {e}')
+        logger.error(f'Error processing {input_file_name}: {e}')

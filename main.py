@@ -20,7 +20,8 @@ def main():
                                              "xlsx sheets), 1c (specific language) or 2", required=True, dest="task",
                         choices=["1a", '1b', '1c', "2", "upload"])
 
-    parser.add_argument('-ofo', '--output_folder', help='Specify the output folder that will hold all the en-xx.xlsx '
+
+    parser.add_argument('-ofo', '--output_folder', help='Specify the output folder for a specific task '
                                                         'files', dest='output_folder')
     parser.add_argument('-ofi', '--output_file', help='Specify the existing output file that will hold the en_xx '
                                                       'sheets', dest='output_file')
@@ -74,18 +75,12 @@ def main():
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
 
-    parser = argparse.ArgumentParser(
-        prog='Massive Dataset Manipulator',
-        description='Tool for manipulating massive datasets.'
-    )
+    if args.task == "2":
+        if not args.output_folder:
+            logging.error("Task 2 requires you to specify your output folder using -ofo/--output-folder flag")
+            return
 
-    parser.add_argument('--input_dir', help='Path to the input directory containing language-specific files',
-                        required=True)
-    parser.add_argument('--output_dir', help='Path to the output directory for storing jsonl files', required=True)
-
-    args = parser.parse_args()
-
-    process_language_files(args.input_dir, args.output_dir)
+        process_language_files(path_to_data, args.output_folder)
 
 
 if __name__ == "__main__":
