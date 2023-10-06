@@ -37,7 +37,7 @@ git clone https://github.com/ryanKinoti/group9_CAT1.git
 Change your working directory to the project folder:
 
 ```bash
-cd https://github.com/ryanKinoti/group9_CAT1.git
+cd group9_CAT1
 ```
 
 ### 4.Install Dependencies:
