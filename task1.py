@@ -63,6 +63,7 @@ def generate_xlsx_files(path_to_data: str, destination_folder: str) -> None:
     en_annot = []
     massive_dataset_files = list(glob.iglob(f'{path_to_data}/*.jsonl'))
 
+    print(path_to_data)
     # make the english base for the xlsx file
     english_file = open(f"{path_to_data}/en-US.jsonl", "r", encoding='utf-8')
     for line in english_file:

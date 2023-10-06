@@ -20,7 +20,6 @@ def main():
                                              "xlsx sheets), 1c (specific language) or 2", required=True, dest="task",
                         choices=["1a", '1b', '1c', "2", "upload"])
 
-
     parser.add_argument('-ofo', '--output_folder', help='Specify the output folder for a specific task '
                                                         'files', dest='output_folder')
     parser.add_argument('-ofi', '--output_file', help='Specify the existing output file that will hold the en_xx '
@@ -80,7 +79,9 @@ def main():
             logging.error("Task 2 requires you to specify your output folder using -ofo/--output-folder flag")
             return
 
-        process_language_files(path_to_data, args.output_folder)
+        languages_to_fetch = ['en-US', 'sw-KE', 'de-DE']
+
+        generate_jsonl_files_for_languages(path_to_data, languages_to_fetch, args.output_folder)
 
 
 if __name__ == "__main__":
