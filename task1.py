@@ -18,7 +18,7 @@ def generate_single_xlsx_file(instruction_id: List[str], en_utt: List[str], en_a
     """
     Generate a single xlsx sheet from provided arguments
 
-    :param instruction_id:  The instruction id for
+    :param instruction_id:  The instruction id for English set
     :param en_utt: English utterance
     :param en_annotation: English utterance annotayions
     :param file: Output file name
