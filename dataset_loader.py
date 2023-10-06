@@ -5,24 +5,11 @@ from logs_settings import *
 
 
 def fetch_and_prepare_dataset(project_folder):
-    # a check to see if the download and extraction was done
+
     jsonl_folders = "./1.1/data"
     full_path = os.path.join(project_folder,jsonl_folders)
     if os.path.exists(full_path):
         logging.info("The data file exists")
-    # for root, dirs, files in os.walk(project_folder):
-    #     for file in files:
-    #         if file.endswith(".jsonl"):
-    #             jsonl_folders.add(root)
-    #
-    # if jsonl_folders:
-    #     logger.info(
-    #         f"The folder(s) {', '.join(jsonl_folders)} already exists and contains .jsonl files. Skipping extraction.")
-    #
-    #     jsonl_folders_list = list(jsonl_folders)
-    #     print(jsonl_folders)
-    #     first_folder = jsonl_folders_list[0]
-        # logger.info(f'The datasets are in {first_folder}')
         return full_path
     else:
         try:
@@ -40,7 +27,6 @@ def fetch_and_prepare_dataset(project_folder):
             shutil.unpack_archive(os.path.join(tmp_dir, "amazon-massive-dataset-1.1.tar.gz"),
                                   extract_dir=project_folder)
 
-            # fetching the dataset folder
             jsonl_folders = set()
             for root, dirs, files in os.walk(project_folder):
                 for file in files:

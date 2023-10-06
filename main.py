@@ -7,7 +7,6 @@ from dataset_loader import *
 
 
 def main():
-    # dataset download and extraction
     project_folder = os.getcwd()
     path_to_data = fetch_and_prepare_dataset(project_folder)
 
@@ -34,11 +33,9 @@ def main():
     args = parser.parse_args()
 
     if args.log:
-        # Enable logging
         numeric_level = getattr(logging, args.log.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % args.log)
-        # create_log_settings(numeric_level)
 
     if args.task == "1a":
         if not args.output_folder:

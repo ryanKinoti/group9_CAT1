@@ -9,14 +9,6 @@ from logs_settings import *
 
 
 def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], destination_folder: str, ) -> None:
-    """
-    Generates separate JSONL files for specified languages
-    :param path_to_data: path to where the jsonl files have been downloaded
-    :param languages: list of languages for which to generate JSONL files
-    :param destination_folder: folder where the resulting jsonl files will be stored
-    :return:
-    """
-
     lang_train = []
     for lang in languages:
         lang_file_path = os.path.join(path_to_data, f"{lang}.jsonl")
@@ -29,15 +21,12 @@ def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], 
 
                 if split == "train":
                     df_dict: Dict[str, List[Any]] = {}
-                    # read the file contents line by line
                     for line in lang_data:
-                        # convert it to a python dictionary
                         for (key, value) in line.items():
                             if key not in df_dict:
                                 df_dict[key] = []
                             df_dict[key].append(value)
                     df = pd.DataFrame(df_dict)
-                    # append to lang tests
                     lang_train.append(df)
 
                 if split_data:
@@ -62,22 +51,10 @@ def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], 
 
 
 def file_exists(file_path):
-    """
-    Check if a file exists.
-    :param file_path: Path to the file.
-    :return: True if the file exists, False otherwise.
-    """
     return os.path.isfile(file_path)
 
 
 def generate_file(data, output_file_path, overwrite=False):
-    """
-    Generate a file with the given data.
-    :param data: List of data to write to the file.
-    :param output_file_path: Path to the output file.
-    :param overwrite: If True, overwrite the existing file. If False and the file exists, skip generation.
-    :return: True if the file is generated, False if the file already exists and overwrite is False.
-    """
     if not overwrite and file_exists(output_file_path):
         print(f"File already exists: {output_file_path}. Skipping.")
         return False
@@ -109,21 +86,10 @@ def process_jsonl_file(input_file, output_dir, language):
 
 
 def combine_dataframes(languages: List[pd.DataFrame], output_dir: str):
-    """
-    Generates one large json file showing all the translations from en to xx with id and utt for all the train sets.
-
-    :param languages: English, Swahili and German train sets
-    :param output_dir: The output directory to stor it in
-
-    :return: None
-    """
     en_train = languages[0]
     sw_train = languages[1]
     de_train = languages[2]
     logging.info("Combining en, sw and de dataframes on id")
-
-    # we do a database style join on id since there can be id's that don't
-    # exist in both datasets, the inner join ensures the id's not in one are dropped
 
     merged_en_sw = en_train.merge(sw_train, on="id")
     all_merged = merged_en_sw.merge(de_train, on="id")
