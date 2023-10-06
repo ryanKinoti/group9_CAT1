@@ -1,15 +1,5 @@
 # Massive Dataset Translation Project
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Question 1: Generating en-xx.xlsx Files](#usage)
-  - [Question 2: Working with Files](#question-2-working-with-files)
-- [Contribution](#contribution)
-
 
 ## Introduction
 
@@ -40,14 +30,14 @@ Follow these steps to set up the project on your machine:
 Open your terminal and navigate to the directory where you want to store the project. Then, run the following command to clone the repository:
 
 ```bash
-git clone https://github.com/your-username/your-project.git
+git clone https://github.com/ryanKinoti/group9_CAT1.git
 ```
 ### 2.Navigate to the Project Directory:
 
 Change your working directory to the project folder:
 
 ```bash
-cd your-repo-project-name
+cd group9_CAT1
 ```
 
 ### 4.Install Dependencies:
@@ -73,7 +63,7 @@ Ensure you are in the project directory where the Python scripts are located.
 Execute the script for Question 1:
 
 ``` bash
-question 1_script.py
+data_loader.py
 ```
 This script will process the dataset and generate en-xx.xlsx files for all languages where English is the pivot language.
 
@@ -85,7 +75,7 @@ To run the Question 2 Script:
 Execute the script for Question 2:
 
 ```bash
-question 2_script.py
+task2.py
 ```
 This script will perform the following tasks:
 
