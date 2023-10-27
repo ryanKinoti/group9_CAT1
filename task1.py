@@ -57,7 +57,7 @@ def generate_xlsx_files(path_to_data: str, destination_folder: str) -> None:
     os.makedirs(destination_folder, exist_ok=True)
 
     with concurrent.futures.ProcessPoolExecutor() as p:
-        for file in massive_dataset_files:
+       for file in massive_dataset_files:
             p.submit(generate_single_xlsx_file, *(instruction_id, en_utterance,
                                                   en_annot,
                                                   file,

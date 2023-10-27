@@ -1,12 +1,12 @@
 import argparse
+import sys
 
 from task1 import *
 from task2 import *
 from google_drive_upload import *
 from dataset_loader import *
 
-
-def main():
+if __name__ == "__main__":
     project_folder = os.getcwd()
     path_to_data = fetch_and_prepare_dataset(project_folder)
 
@@ -40,7 +40,7 @@ def main():
     if args.task == "1a":
         if not args.output_folder:
             logging.error('For task 1, you need to specify your output folder -ofo')
-            return
+            sys.exit(1)
         logging.info('Generating the en-xx.xlsx files and storing them in your desired '
                      'output folder: %s ....' % args.output_folder)
         generate_xlsx_files(path_to_data, args.output_folder)
@@ -48,14 +48,14 @@ def main():
     if args.task == "1b":
         if not args.output_file:
             logging.error('For task 1b, you need to specify your output file -ofi')
-            return
+            sys.exit(1)
         logging.info("Generating xls sheet and storing it to  %s" % args.output_file)
         generate_xlsx_sheets(path_to_data, args.output_file)
     if args.task == "1c":
         if not args.language and not args.output_folder:
             logging.error(
                 'To complete task 1c kindly specify your desired language: -lan and your output folder: -ofo')
-            return
+            sys.exit(1)
 
         logging.info(f'Generating the en-xx.xlsx file for the language: {args.language}'
                      f' and storing it in your desired output folder: {args.output_folder}')
@@ -66,7 +66,7 @@ def main():
             logging.error(
                 "To complete upload, you need to specify -du/--desired_upload for the folder to upload and "
                 "--df/--drive_folder for the folder name")
-            return
+            sys.exit(1)
         logging.info(f'Uploading the files or folders in path: {args.desired_upload}'
                      f' to the google drive folder: {args.drive_folder}')
         upload_files(args.drive_folder, args.desired_upload)
@@ -74,12 +74,8 @@ def main():
     if args.task == "2":
         if not args.output_folder:
             logging.error("Task 2 requires you to specify your output folder using -ofo/--output-folder flag")
-            return
+            sys.exit(1)
 
         languages_to_fetch = ['en-US', 'sw-KE', 'de-DE']
 
         generate_jsonl_files_for_languages(path_to_data, languages_to_fetch, args.output_folder)
-
-
-if __name__ == "__main__":
-    main()

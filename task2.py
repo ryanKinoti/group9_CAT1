@@ -47,7 +47,7 @@ def generate_jsonl_files_for_languages(path_to_data: str, languages: List[str], 
             logging.error(f"{lang}.jsonl file not found in the specified path: {path_to_data}")
             return
 
-    combine_dataframes(lang_train, destination_folder)
+    combine_dataframes_and_save(lang_train, destination_folder)
 
 
 def file_exists(file_path):
@@ -85,7 +85,7 @@ def process_jsonl_file(input_file, output_dir, language):
         logger.error(f'Error processing {input_file}: {e}')
 
 
-def combine_dataframes(languages: List[pd.DataFrame], output_dir: str):
+def combine_dataframes_and_save(languages: List[pd.DataFrame], output_dir: str):
     en_train = languages[0]
     sw_train = languages[1]
     de_train = languages[2]
